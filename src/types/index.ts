@@ -77,8 +77,7 @@ export interface Order {
   paymentId?: string;
   paymentMethod: string;
   orderStatus: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  shiprocketOrderId?: string;
-  shiprocketShipmentId?: string;
+  delhiveryOrderRef?: string;
   awbCode?: string;
   courierName?: string;
   trackingUrl?: string;
@@ -87,81 +86,98 @@ export interface Order {
   updatedAt: Date;
 }
 
-// Shiprocket Types
-export interface ShiprocketOrderPayload {
-  order_id: string;
-  order_date: string;
-  pickup_location: string;
-  billing_customer_name: string;
-  billing_last_name: string;
-  billing_address: string;
-  billing_city: string;
-  billing_pincode: string;
-  billing_state: string;
-  billing_country: string;
-  billing_email: string;
-  billing_phone: string;
-  shipping_is_billing: boolean;
-  order_items: ShiprocketOrderItem[];
-  payment_method: 'Prepaid' | 'COD';
-  sub_total: number;
-  length: number;
-  breadth: number;
-  height: number;
-  weight: number;
-}
-
-export interface ShiprocketOrderItem {
+// Delhivery Types
+export interface DelhiveryShipmentPayload {
   name: string;
-  sku: string;
-  units: number;
-  selling_price: number;
+  add: string;
+  pin: string;
+  city: string;
+  state: string;
+  country: string;
+  phone: string;
+  order: string;
+  payment_mode: 'Prepaid' | 'COD';
+  return_pin: string;
+  return_city: string;
+  return_phone: string;
+  return_add: string;
+  return_name: string;
+  return_email: string;
+  return_state: string;
+  return_country: string;
+  products_desc: string;
+  hsn_code: string;
+  cod_amount: string;
+  order_date: string | null;
+  total_amount: string;
+  seller_add: string;
+  seller_name: string;
+  seller_inv: string;
+  quantity: number;
+  waybill: string;
+  shipment_width: number;
+  shipment_height: number;
+  weight: number;
+  shipment_length: number;
+  seller_gst_tin: string;
+  shipping_mode: 'Surface' | 'Express';
+  address_type: 'home' | 'office';
 }
 
-export interface ShiprocketOrderResponse {
-  order_id: number;
-  shipment_id: number;
+export interface DelhiveryPackage {
   status: string;
-  status_code: number;
-  onboarding_completed_now: number;
-  awb_code: string;
-  courier_company_id: number;
-  courier_name: string;
+  package_count: number;
+  remarks: string[];
+  refnum: string;
+  sort_code: string;
+  cash_pickups: number;
+  prepaid: boolean;
+  cod: boolean;
+  waybill: string;
+  client_name: string;
+  documents: unknown[];
 }
 
-export interface ShiprocketTrackingResponse {
-  tracking_data: {
-    track_status: number;
-    shipment_status: number;
-    shipment_status_object: {
-      status: string;
-      status_code: number;
-    };
-    shipment_track: Array<{
-      id: number;
-      awb_code: string;
-      courier_company_id: number;
-      shipment_id: number;
-      order_id: number;
-      pickup_date: string;
-      delivered_date: string;
-      weight: string;
-      packages: number;
-      current_status: string;
-      delivered_to: string;
-      destination: string;
-      consignee_name: string;
-      origin: string;
-      courier_agent_details: string;
-      edd: string;
-    }>;
-    shipment_track_activities: Array<{
-      date: string;
-      status: string;
-      activity: string;
-      location: string;
-    }>;
+export interface DelhiveryCreateResponse {
+  cash_pickups_count: number;
+  prepaid_pickups_count: number;
+  cod_count: number;
+  prepaid_count: number;
+  package_count: number;
+  upload_wbn: string;
+  packages: DelhiveryPackage[];
+}
+
+export interface DelhiveryScanDetail {
+  ScanDateTime: string;
+  Scan: string;
+  ScanType: string;
+  ScannedLocation: string;
+  Instructions: string;
+  StatusDateTime: string;
+}
+
+export interface DelhiveryShipment {
+  AWB: string;
+  Destination: string;
+  DestinationName: string;
+  Origin: string;
+  OriginName: string;
+  PickUpDate: string;
+  DeliveryDate: string;
+  ReceivedBy: string;
+  Status: {
+    Status: string;
+    Instructions: string;
+    StatusDateTime: string;
+    StatusLocation: string;
+    StatusType: string;
   };
+  Scans: Array<{ ScanDetail: DelhiveryScanDetail }>;
+}
+
+export interface DelhiveryTrackingResponse {
+  ShipmentData: Array<{ Shipment: DelhiveryShipment }>;
 }
 
 // Razorpay Types

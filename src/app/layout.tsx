@@ -42,7 +42,7 @@ export default function RootLayout({
         <CartProvider>
           <AnnouncementBar />
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pt-2">{children}</main>
           <Footer />
         </CartProvider>
       </body>

@@ -88,8 +88,7 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
-  shiprocketOrderId: { type: String },
-  shiprocketShipmentId: { type: String },
+  delhiveryOrderRef: { type: String },
   awbCode: { type: String },
   courierName: { type: String },
   trackingUrl: { type: String },

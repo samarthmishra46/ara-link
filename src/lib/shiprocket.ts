@@ -164,6 +164,7 @@ export async function generateAWB(shipmentId: number, courierId: number) {
   }
 }
 
+
 // Request pickup
 export async function requestPickup(shipmentId: number) {
   const client = await getShiprocketClient();

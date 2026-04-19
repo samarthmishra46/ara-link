@@ -59,21 +59,21 @@ body {
   width: 100%;
   max-width: var(--max-w);
   margin: 0 auto;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 @media (min-width: 768px) {
   .container {
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 48px;
+    padding-right: 48px;
   }
 }
 
 @media (min-width: 1024px) {
   .container {
-    padding-left: 60px;
-    padding-right: 60px;
+    padding-left: 72px;
+    padding-right: 72px;
   }
 }
 
@@ -274,20 +274,20 @@ body {
 }
 
 .section {
-  padding: 48px 20px;
+  padding: 52px 24px;
   max-width: var(--max-w);
   margin: 0 auto;
 }
 
 @media (min-width: 768px) {
   .section {
-    padding: 64px 40px;
+    padding: 72px 48px;
   }
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding: 80px 60px;
+    padding: 96px 72px;
   }
 }
 

@@ -13,7 +13,8 @@ export default function Header() {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 h-[58px] md:h-[68px] px-5 md:px-10 lg:px-16 flex items-center justify-between bg-[#05080a]/95 backdrop-blur-xl border-b border-[rgba(184,223,232,0.07)] max-w-[1400px] mx-auto w-full">
+      <div className="sticky top-0 z-40 w-full bg-[#05080a]/95 backdrop-blur-xl border-b border-[rgba(184,223,232,0.07)]">
+      <nav className="h-[58px] md:h-[68px] px-5 md:px-10 lg:px-16 flex items-center justify-between max-w-[1400px] mx-auto">
         <Link 
           href="/" 
           className="font-serif text-[19px] md:text-[22px] font-light tracking-[0.45em] text-[#edeae4] no-underline hover:text-[#b8dfe8] transition-colors"
@@ -76,6 +77,7 @@ export default function Header() {
           </button>
         </div>
       </nav>
+      </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (

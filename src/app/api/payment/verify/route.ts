@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyPaymentSignature } from "@/lib/razorpay";
 import { updateOrder } from "@/lib/db";
-import { createShiprocketOrder } from "@/lib/shiprocket";
+import { createDelhiveryShipment } from "@/lib/delhivery";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,22 +36,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create Shiprocket order (auto-ship)
+    // Create Delhivery shipment (auto-ship)
     try {
-      const shiprocketResponse = await createShiprocketOrder(updatedOrder);
-      
-      // Update order with Shiprocket details
+      const delhiveryResponse = await createDelhiveryShipment(updatedOrder);
+      const pkg = delhiveryResponse.packages[0];
+
       await updateOrder(orderId, {
-        shiprocketOrderId: shiprocketResponse.order_id?.toString(),
-        shiprocketShipmentId: shiprocketResponse.shipment_id?.toString(),
-        awbCode: shiprocketResponse.awb_code,
-        courierName: shiprocketResponse.courier_name,
-        orderStatus: shiprocketResponse.awb_code ? "processing" : "confirmed",
+        delhiveryOrderRef: pkg.refnum,
+        awbCode: pkg.waybill,
+        courierName: "Delhivery",
+        trackingUrl: `https://www.delhivery.com/track/package/${pkg.waybill}`,
+        orderStatus: pkg.waybill ? "processing" : "confirmed",
       });
-    } catch (shiprocketError) {
+    } catch (delhiveryError) {
       // Log but don't fail the payment verification
-      console.error("Shiprocket order creation failed:", shiprocketError);
-      // Order is still confirmed, can be manually pushed to Shiprocket later
+      console.error("Delhivery shipment creation failed:", delhiveryError);
+      // Order is still confirmed, can be manually pushed to Delhivery later
     }
 
     return NextResponse.json({

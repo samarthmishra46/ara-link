@@ -29,7 +29,7 @@ export default function Home() {
           </div>
 
           {/* Product Info */}
-          <div className="w-full lg:w-1/2 xl:w-2/5 p-5 md:p-8 lg:p-12 xl:p-16 bg-[#05080a] flex flex-col justify-center">
+          <div className="w-full lg:w-1/2 xl:w-2/5 p-6 md:p-10 lg:p-14 xl:p-18 bg-[#05080a] flex flex-col justify-center">
             <div className="flex items-center gap-2 flex-wrap mb-4">
               <span className="badge">Cold Therapy</span>
               <span className="badge badge-gold">🔥 Limited Stock</span>

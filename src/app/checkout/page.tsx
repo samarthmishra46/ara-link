@@ -247,7 +247,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="bg-[#05080a] min-h-screen flex flex-col items-center justify-center p-5 text-center">
+      <div className="bg-[#05080a] min-h-screen flex flex-col items-center justify-center p-8 text-center">
         <div className="text-6xl md:text-8xl mb-6">🧊</div>
         <h1 className="font-serif text-2xl md:text-3xl text-[#edeae4] mb-3">Your cart is empty</h1>
         <p className="text-sm md:text-base text-[#5a6670] mb-6">Add some products to get started</p>
@@ -261,7 +261,7 @@ export default function CheckoutPage() {
   return (
     <div className="bg-[#05080a] min-h-screen">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-[#05080a]/95 backdrop-blur-xl border-b border-[rgba(184,223,232,0.07)] px-5 md:px-10 lg:px-16 py-4">
+      <div className="sticky top-0 z-20 bg-[#05080a]/95 backdrop-blur-xl border-b border-[rgba(184,223,232,0.07)] px-6 md:px-12 lg:px-18 py-4">
         <div className="flex items-center gap-4 max-w-[1400px] mx-auto">
           <Link href="/products" className="text-[#5a6670] hover:text-[#edeae4] transition-colors">
             <ArrowLeft size={20} />
@@ -270,7 +270,7 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto p-5 md:p-10 lg:p-16">
+      <div className="max-w-[1400px] mx-auto px-6 py-8 md:px-12 md:py-12 lg:px-18 lg:py-16">
         {/* Desktop: Two column layout */}
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
           {/* Left Column - Form */}

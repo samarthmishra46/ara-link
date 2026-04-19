@@ -64,7 +64,7 @@ function OrderTracker() {
         
         // If shipped, fetch tracking
         if (data.order.awbCode) {
-          const trackRes = await fetch(`/api/shiprocket/track?awb=${data.order.awbCode}`);
+          const trackRes = await fetch(`/api/delhivery/track?awb=${data.order.awbCode}`);
           const trackData = await trackRes.json();
           if (trackData.success) {
             setOrder((prev) => prev ? { ...prev, tracking: trackData.tracking } : null);
@@ -101,7 +101,7 @@ function OrderTracker() {
         </h1>
 
         {/* Search Form */}
-        <div className="mb-8">
+        <div className="mb-10">
           <div className="flex gap-2">
             <input
               type="text"
@@ -205,16 +205,16 @@ function OrderTracker() {
                   </p>
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="text-sm text-[#edeae4]">{order.courierName || "Shiprocket"}</p>
+                      <p className="text-sm text-[#edeae4]">{order.courierName || "Delhivery"}</p>
                       <p className="text-xs text-[#5a6670]">AWB: {order.awbCode}</p>
                     </div>
-                    <a 
-                      href={`https://shiprocket.co/tracking/${order.awbCode}`}
+                    <a
+                      href={`https://www.delhivery.com/track/package/${order.awbCode}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-[#6aafbf] flex items-center gap-1 hover:underline"
                     >
-                      Track on Shiprocket
+                      Track on Delhivery
                       <ArrowRight size={12} />
                     </a>
                   </div>
