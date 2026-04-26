@@ -109,6 +109,41 @@ export const products: Product[] = [
   },
 ];
 
+export const otoProducts: AddOn[] = [
+  {
+    id: "beetroot-powder",
+    name: "Beetroot Powder",
+    description: "Rich in betalains and natural nitrates. Dissolve in your ice bowl water for a deep-red anti-inflammatory soak that visibly brightens dull skin.",
+    price: 249,
+    originalPrice: 399,
+    icon: "◉",
+  },
+  {
+    id: "orange-peel-powder",
+    name: "Orange Peel Powder",
+    description: "Cold-pressed orange peel — dense with Vitamin C and natural AHAs. Pairs with ice therapy to tighten pores and even out skin tone in one step.",
+    price: 199,
+    originalPrice: 349,
+    icon: "◌",
+  },
+  {
+    id: "rose-powder",
+    name: "Rose Powder",
+    description: "Whole dried rose petals, finely milled. Add to your bowl for a calming, anti-inflammatory ritual. Reduces redness faster when combined with cold exposure.",
+    price: 299,
+    originalPrice: 449,
+    icon: "✿",
+  },
+  {
+    id: "mint-powder",
+    name: "Mint Powder",
+    description: "Cooling menthol meets cold therapy. Dissolve in ice water before dipping — the dual-cooling effect tightens capillaries and leaves skin visibly awake.",
+    price: 199,
+    originalPrice: 349,
+    icon: "❋",
+  },
+];
+
 export const addOns: AddOn[] = [
   {
     id: "rose-water",

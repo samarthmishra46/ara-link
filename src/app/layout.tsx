@@ -16,7 +16,7 @@ const playfair = Playfair_Display({
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["300", "400", "500", "600"],
 });
 
 const dmMono = DM_Mono({
@@ -27,7 +27,7 @@ const dmMono = DM_Mono({
 
 export const metadata: Metadata = {
   title: "ARA — Cold Therapy Skincare",
-  description: "Premium cold therapy skincare products. The ARA Ice Bowl - the last ice bowl you'll ever argue about.",
+  description: "Premium cold therapy skincare products. The ARA Ice Bowl — the last ice bowl you'll ever argue about.",
   keywords: ["skincare", "cold therapy", "ice facial", "ARA", "beauty", "wellness"],
 };
 
@@ -38,11 +38,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${dmMono.variable}`}>
-      <body className="min-h-screen flex flex-col bg-bg text-ara-white font-sans antialiased">
+      <body className="min-h-screen flex flex-col bg-white text-[#0f0a1e] font-sans antialiased">
         <CartProvider>
           <AnnouncementBar />
           <Header />
-          <main className="flex-1 pt-2">{children}</main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </CartProvider>
       </body>

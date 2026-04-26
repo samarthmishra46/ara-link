@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 export default function AnnouncementBar() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   const announcements = [
     "🧊 Free shipping across India · Only 17 units left · Dermatologist tested",
     "✨ New: Complete Ritual Kit now available · Save ₹648",
@@ -19,8 +19,8 @@ export default function AnnouncementBar() {
   }, [announcements.length]);
 
   return (
-    <div className="bg-[#6aafbf] text-[#05080a] text-center py-2.5 px-5 font-mono text-[11px] tracking-[0.2em] uppercase relative z-50">
-      <span className="font-normal transition-opacity duration-300">
+    <div className="w-full bg-linear-to-r from-[#5b21b6] via-[#7c3aed] to-[#5b21b6] text-white text-center py-2.5 px-4">
+      <span className="font-mono text-[11px] tracking-[0.15em] uppercase">
         {announcements[currentIndex]}
       </span>
     </div>
