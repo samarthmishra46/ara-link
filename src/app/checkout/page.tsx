@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useCart } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
@@ -72,9 +72,11 @@ const inputCls =
   "w-full border border-edge rounded-xl px-4 py-3 text-sm text-ink placeholder-ink-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-colors bg-white";
 const labelCls = "block text-xs font-bold text-ink-2 mb-1.5 uppercase tracking-wide";
 
-export default function CheckoutPage() {
-  const { state, getSubtotal, clearCart } = useCart();
+function CheckoutContent() {
+  const { state, getSubtotal, clearCart, setItems } = useCart();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const resumeToken = searchParams.get("resume");
   const { items } = state;
 
   const [step, setStep] = useState<1 | 2>(1);
@@ -82,6 +84,7 @@ export default function CheckoutPage() {
   const [selectedGift, setSelectedGift] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">("razorpay");
+  const [draftToken, setDraftToken] = useState<string | null>(null);
 
   const subtotal = getSubtotal();
   const prepaidDiscount = Math.round(subtotal * PREPAID_DISCOUNT_RATE);
@@ -94,7 +97,7 @@ export default function CheckoutPage() {
   const giftUnlocked = subtotal >= FREE_GIFT_THRESHOLD;
   const amountToGift = FREE_GIFT_THRESHOLD - subtotal;
 
-  const { register, handleSubmit, formState: { errors } } = useForm<CheckoutFormData>();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<CheckoutFormData>();
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -103,6 +106,38 @@ export default function CheckoutPage() {
     document.body.appendChild(script);
     return () => { if (document.body.contains(script)) document.body.removeChild(script); };
   }, []);
+
+  // Resume from WATI WhatsApp link — rehydrate cart + form and skip to payment step.
+  useEffect(() => {
+    if (!resumeToken) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/abandoned-cart/${resumeToken}`);
+        if (!res.ok) return;
+        const { draft } = await res.json();
+        if (cancelled || !draft) return;
+        if (Array.isArray(draft.items) && draft.items.length > 0) {
+          setItems(draft.items);
+        }
+        if (draft.shippingAddress) {
+          const { country, ...formFields } = draft.shippingAddress;
+          void country;
+          reset(formFields);
+          setSavedFormData(formFields);
+        }
+        if (draft.paymentMethod === "cod" || draft.paymentMethod === "razorpay") {
+          setPaymentMethod(draft.paymentMethod);
+        }
+        setDraftToken(resumeToken);
+        setStep(2);
+      } catch (err) {
+        console.error("Resume draft failed:", err);
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumeToken]);
 
   // Fire InitiateCheckout once when checkout page is reached with items
   useEffect(() => {
@@ -126,6 +161,32 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!giftUnlocked) setSelectedGift(null);
   }, [giftUnlocked]);
+
+  // beforeunload safety net — if user closes tab during Step 2 and the original
+  // onStep1Submit POST never landed, fire a sendBeacon so the draft still exists.
+  useEffect(() => {
+    if (step !== 2 || !savedFormData) return;
+    const handler = () => {
+      if (draftToken) return; // already saved
+      const payload = JSON.stringify({
+        items,
+        shippingAddress: { ...savedFormData, country: "India" },
+        amount: activeTotal,
+        paymentMethod,
+        freeGift: giftUnlocked && selectedGift ? selectedGift : null,
+      });
+      try {
+        navigator.sendBeacon(
+          "/api/abandoned-cart",
+          new Blob([payload], { type: "application/json" }),
+        );
+      } catch {
+        // best effort
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [step, savedFormData, draftToken, items, activeTotal, paymentMethod, giftUnlocked, selectedGift]);
 
   const buildOrderItems = () => [
     ...items.map((item) => ({
@@ -151,6 +212,27 @@ export default function CheckoutPage() {
   const onStep1Submit = (data: CheckoutFormData) => {
     setSavedFormData(data);
     setStep(2);
+
+    // Save an abandoned-cart draft (non-blocking). If user closes tab or doesn't
+    // pay within ABANDONED_CART_DELAY_MINUTES, the dispatch cron sends a WATI
+    // WhatsApp message with a /checkout?resume=<token> link.
+    if (!draftToken) {
+      fetch("/api/abandoned-cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items,
+          shippingAddress: { ...data, country: "India" },
+          amount: activeTotal,
+          paymentMethod,
+          freeGift: giftUnlocked && selectedGift ? selectedGift : null,
+        }),
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((res) => { if (res?.token) setDraftToken(res.token); })
+        .catch(() => { /* non-blocking */ });
+    }
+
     trackLead({
       content_name: "Checkout — Delivery details submitted",
       content_category: "checkout_step_1",
@@ -220,6 +302,9 @@ export default function CheckoutPage() {
           if (verifyRes.ok) {
             const verifyData = await verifyRes.json();
             const trackId = verifyData.awbCode || verifyData.orderNumber || orderData.orderNumber;
+            if (draftToken) {
+              fetch(`/api/abandoned-cart/${draftToken}/recover`, { method: "POST" }).catch(() => {});
+            }
             trackPurchase({
               content_ids: items.map((i) => i.product.id),
               contents: items.map((i) => ({
@@ -268,6 +353,9 @@ export default function CheckoutPage() {
       if (!res.ok) throw new Error("Failed to place COD order");
       const data = await res.json();
       const trackId = data.awbCode || data.orderNumber;
+      if (draftToken) {
+        fetch(`/api/abandoned-cart/${draftToken}/recover`, { method: "POST" }).catch(() => {});
+      }
       trackPurchase({
         content_ids: items.map((i) => i.product.id),
         contents: items.map((i) => ({
@@ -653,5 +741,17 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }

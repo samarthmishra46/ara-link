@@ -140,3 +140,69 @@ export async function getAllOrders(limit = 50, skip = 0) {
   await connectDB();
   return await OrderModel.find().sort({ createdAt: -1 }).limit(limit).skip(skip);
 }
+
+// Draft Checkout Schema — abandoned cart recovery via WATI WhatsApp
+const draftCheckoutSchema = new mongoose.Schema({
+  token: { type: String, required: true, unique: true, index: true },
+  items: { type: mongoose.Schema.Types.Mixed, required: true },
+  shippingAddress: {
+    fullName: { type: String, required: true },
+    phone: { type: String, required: true },
+    email: { type: String, required: true },
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    pincode: { type: String, required: true },
+    country: { type: String, default: "India" },
+  },
+  amount: { type: Number, required: true },
+  paymentMethod: { type: String, enum: ["razorpay", "cod"], default: "razorpay" },
+  freeGift: { type: String, default: null },
+  whatsappSent: { type: Boolean, default: false, index: true },
+  whatsappSentAt: { type: Date },
+  recovered: { type: Boolean, default: false },
+  recoveredAt: { type: Date },
+  expiresAt: { type: Date, required: true, expires: 0 },
+}, { timestamps: true });
+
+export const DraftCheckoutModel =
+  mongoose.models.DraftCheckout || mongoose.model("DraftCheckout", draftCheckoutSchema);
+
+export async function createDraftCheckout(data: Record<string, unknown>) {
+  await connectDB();
+  const draft = new DraftCheckoutModel(data);
+  return await draft.save();
+}
+
+export async function getDraftByToken(token: string) {
+  await connectDB();
+  return await DraftCheckoutModel.findOne({ token });
+}
+
+export async function markDraftRecovered(token: string) {
+  await connectDB();
+  return await DraftCheckoutModel.findOneAndUpdate(
+    { token },
+    { recovered: true, recoveredAt: new Date() },
+    { new: true }
+  );
+}
+
+export async function getPendingDrafts(olderThanMinutes: number) {
+  await connectDB();
+  const cutoff = new Date(Date.now() - olderThanMinutes * 60 * 1000);
+  return await DraftCheckoutModel.find({
+    whatsappSent: false,
+    recovered: false,
+    createdAt: { $lte: cutoff },
+  });
+}
+
+export async function markDraftWhatsappSent(token: string) {
+  await connectDB();
+  return await DraftCheckoutModel.findOneAndUpdate(
+    { token },
+    { whatsappSent: true, whatsappSentAt: new Date() },
+    { new: true }
+  );
+}

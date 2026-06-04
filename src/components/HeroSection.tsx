@@ -69,7 +69,7 @@ export default function HeroSection() {
             <div className="relative rounded-3xl overflow-hidden border-2 border-edge bg-white shadow-[var(--card-shadow-hover)]">
               <div className="aspect-square relative">
                 <video
-                  src="https://res.cloudinary.com/dix4pzu0k/video/upload/v1777809328/Landing_aoa94g.mp4"
+                  src="https://res.cloudinary.com/dglcfblpp/video/upload/v1780519268/Landing_wxno68.mp4"
                   autoPlay
                   muted
                   loop

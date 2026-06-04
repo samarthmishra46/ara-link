@@ -34,6 +34,7 @@ interface CartContextType {
   removeItem: (productId: string, variantId?: string) => void;
   updateQuantity: (productId: string, quantity: number, variantId?: string) => void;
   clearCart: () => void;
+  setItems: (items: CartItem[]) => void;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -166,6 +167,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLEAR_CART" });
   };
 
+  const setItems = (items: CartItem[]) => {
+    dispatch({ type: "HYDRATE", payload: items });
+  };
+
   const toggleCart = () => {
     dispatch({ type: "TOGGLE_CART" });
   };
@@ -202,6 +207,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeItem,
         updateQuantity,
         clearCart,
+        setItems,
         toggleCart,
         openCart,
         closeCart,
