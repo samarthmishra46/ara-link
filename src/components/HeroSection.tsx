@@ -78,6 +78,8 @@ export default function HeroSection() {
                 />
               </div>
 
+              
+
               {/* Floating Badge: Rating */}
               {/* <div className="absolute top-6 left-6 bg-white rounded-2xl px-4 py-3 shadow-lg border border-edge">
                 <p className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-0.5">
